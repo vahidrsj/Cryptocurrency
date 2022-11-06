@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Cryptocurrency.ConsoleUI": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

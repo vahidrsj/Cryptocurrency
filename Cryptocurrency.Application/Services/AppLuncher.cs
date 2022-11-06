@@ -1,10 +1,9 @@
-﻿using Cryptocurrency.Application.Dto.ServiceResultDto;
-using Cryptocurrency.Application.Handlers;
+﻿using Cryptocurrency.Application.APISettings;
+using Cryptocurrency.Application.Dto.ServiceResultDto;
 using Cryptocurrency.Application.Interfaces;
-using Cryptocurrency.Core.Entities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 
 namespace Cryptocurrency.Application.Services
 {
@@ -12,19 +11,17 @@ namespace Cryptocurrency.Application.Services
     {
         private readonly ILogger<AppLuncher> logger;
         private readonly ICryptocurrencyHandler cryptocurrencyHandler;
+        private readonly CurrencySetting option;
 
-        public AppLuncher(ILogger<AppLuncher> logger, ICryptocurrencyHandler cryptocurrencyHandler)
+        public AppLuncher(ILogger<AppLuncher> logger, ICryptocurrencyHandler cryptocurrencyHandler, IOptions<CurrencySetting> option)
         {
             this.cryptocurrencyHandler = cryptocurrencyHandler ?? throw new ArgumentNullException(nameof(cryptocurrencyHandler));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.option = option.Value ?? throw new ArgumentNullException(nameof(option));
         }
 
         public async Task LunchApp()
         {
-            logger.LogDebug("Application lunched");
-
-            var cashSymbols = await cryptocurrencyHandler.GetCryptoSymbols();
-
             Console.Clear();
             bool showMenu = true;
             while (showMenu)
@@ -65,7 +62,7 @@ namespace Cryptocurrency.Application.Services
                     Console.WriteLine("\r\n Invalid symbol. \r\n");
                 else
                 {
-                    var crypto = await cryptocurrencyHandler.GetCryptoPrices(symbol.ToUpper());
+                    var crypto = await cryptocurrencyHandler.GetCryptoPrices(symbol.ToUpper(), option.Currencies);
                     if (!crypto.IsSuccessfull)
                         Console.WriteLine(crypto.ErrorInfo.ToString() + "\r\n");
                     else

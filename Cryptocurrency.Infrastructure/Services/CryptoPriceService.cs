@@ -1,6 +1,7 @@
 ﻿using Cryptocurrency.Application.Dto.APIDto;
 using Cryptocurrency.Application.Interfaces;
 using Cryptocurrency.Application.Services;
+using Cryptocurrency.Core.Errors;
 using Cryptocurrency.Infrastructure.Services.API;
 
 namespace Cryptocurrency.Infrastructure.Services
@@ -13,16 +14,16 @@ namespace Cryptocurrency.Infrastructure.Services
             this.exchangeRateAPI = exchangeRateAPI;
         }
 
-        public async Task<ServiceResult<ExchangeRateAPIDto>> GetRates(string baseCurrency)
+        public async Task<ServiceResult<ExchangeRateAPIDto>> GetRates(string baseCurrency, List<string> currencies)
         {
             try
             {
-                var rateResult = await exchangeRateAPI.GetRates(baseCurrency, "AUD,BRL,EUR,GBP,USD");
+                var rateResult = await exchangeRateAPI.GetRates(baseCurrency, string.Join(",", currencies));
 
                 if (rateResult != null)
                     return new ServiceResult<ExchangeRateAPIDto>(rateResult);
                 else
-                    return new ServiceResult<ExchangeRateAPIDto>("An error occurred on API calling");
+                    return new ServiceResult<ExchangeRateAPIDto>(new ErrorResultDto() { ErrorType = Core.Enums.ErrorTypes.APICallError });
             }
             catch (Exception ex)
             {

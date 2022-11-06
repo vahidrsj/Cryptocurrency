@@ -1,4 +1,5 @@
-﻿using Cryptocurrency.Application.Dto.ServiceResultDto;
+﻿using Cryptocurrency.Application.Constants;
+using Cryptocurrency.Application.Dto.ServiceResultDto;
 using Cryptocurrency.Application.Interfaces;
 using Cryptocurrency.Application.Mapping;
 using Cryptocurrency.Application.Services;
@@ -26,39 +27,11 @@ namespace Cryptocurrency.Application.Handlers
             this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         }
 
-        private async Task<ServiceResult<CryptoListDto>> FetchCryptoSymbols()
-        {
-            var response = await coinMarketAPI.GetSymbols();
-
-            if (!response.IsSuccessfull)
-            {
-                logger.LogError(response.ErrorInfo.ToString());
-                return new ServiceResult<CryptoListDto>(response.ErrorInfo);
-            }
-
-            var resultStatus = response.Result.Status;
-            if (resultStatus.error_code == 0)
-            {
-                var symbolResult = Mapper.APItoUI(response.Result);
-
-                logger.LogInformation("Crypto name list was successfully fetched. {@symbolResult}", symbolResult);
-
-                return new ServiceResult<CryptoListDto>(symbolResult);
-            }
-            else
-            {
-                var error = new ErrorResultDto() { ErrorType = ErrorTypes.APIReturnError, Message = resultStatus.error_message };
-                logger.LogError(error.ToString());
-
-                return new ServiceResult<CryptoListDto>(error);
-            }
-        }
-
         public async Task<ServiceResult<CryptoListDto>> GetCryptoSymbols()
         {
             logger.LogInformation("Getting symbols using Coinmarket api.");
 
-            var casheResult = memoryCache.Get<CryptoListDto>("CryptoList");
+            var casheResult = memoryCache.Get<CryptoListDto>(CacheKeys.CryptoListKey);
             if (casheResult == null)
             {
                 var symbolResult = await FetchCryptoSymbols();
@@ -68,7 +41,8 @@ namespace Cryptocurrency.Application.Handlers
                     return new ServiceResult<CryptoListDto>(symbolResult.ErrorInfo);
                 }
 
-                memoryCache.Set("CryptoList", symbolResult.Result, TimeSpan.FromMinutes(10));
+                memoryCache.Set(CacheKeys.CryptoListKey, symbolResult.Result, TimeSpan.FromMinutes(10));
+                logger.LogInformation("Crypto name list stored in cache. {@casheValues}", symbolResult.Result);
 
                 return new ServiceResult<CryptoListDto>(symbolResult.Result);
             }
@@ -79,7 +53,7 @@ namespace Cryptocurrency.Application.Handlers
             }
         }
 
-        public async Task<ServiceResult<CryptoPriceDto>> GetCryptoPrices(string baseCrypto)
+        public async Task<ServiceResult<CryptoPriceDto>> GetCryptoPrices(string baseCrypto, List<string> currencies)
         {
             if (string.IsNullOrWhiteSpace(baseCrypto))
             {
@@ -99,7 +73,7 @@ namespace Cryptocurrency.Application.Handlers
 
             logger.LogInformation($"Getting {baseCrypto} prices using Exchangerate api.");
 
-            var response = await exchangeRateAPI.GetRates(baseCrypto.ToUpper());
+            var response = await exchangeRateAPI.GetRates(baseCrypto.ToUpper(), currencies);
             if (!response.IsSuccessfull)
             {
                 logger.LogError(response.ErrorInfo.ToString());
@@ -111,14 +85,8 @@ namespace Cryptocurrency.Application.Handlers
             {
                 crypto.SetPrice(response.Result.Rates);
 
-                //var priceResult = Mapper.CryptoToUI(crypto);
+                var priceResult = crypto.ToCryptoPriceDto();
 
-                var priceResult = new CryptoPriceDto()
-                {
-                    Name = crypto.CryptoName.Name,
-                    Symbol = crypto.CryptoName.Symbol,
-                    Prices = crypto.Prices.ToDictionary(d => d.Currency, d => d.Value)
-                };
                 logger.LogInformation("Crypto prices was successfully fetched. {@priceResult}", priceResult);
 
                 return new ServiceResult<CryptoPriceDto>(priceResult);
@@ -129,7 +97,6 @@ namespace Cryptocurrency.Application.Handlers
                 logger.LogError(error.ToString());
                 return new ServiceResult<CryptoPriceDto>(error);
             }
-
         }
 
         private async Task<ServiceResult<CryptoName>> ValidateSymbol(string symbol)
@@ -158,6 +125,34 @@ namespace Cryptocurrency.Application.Handlers
             else
                 return new ServiceResult<CryptoName>(new ErrorResultDto() { ErrorType = ErrorTypes.NotFound });
 
+        }
+
+        private async Task<ServiceResult<CryptoListDto>> FetchCryptoSymbols()
+        {
+            var response = await coinMarketAPI.GetSymbols();
+
+            if (!response.IsSuccessfull)
+            {
+                logger.LogError(response.ErrorInfo.ToString());
+                return new ServiceResult<CryptoListDto>(response.ErrorInfo);
+            }
+
+            var resultStatus = response.Result.Status;
+            if (resultStatus.error_code == 0)
+            {
+                var symbolResult = response.Result.ToCryptoListDto();
+
+                logger.LogInformation("Crypto name list was successfully fetched. {@symbolResult}", symbolResult);
+
+                return new ServiceResult<CryptoListDto>(symbolResult);
+            }
+            else
+            {
+                var error = new ErrorResultDto() { ErrorType = ErrorTypes.APIReturnError, Message = resultStatus.error_message };
+                logger.LogError(error.ToString());
+
+                return new ServiceResult<CryptoListDto>(error);
+            }
         }
     }
 }

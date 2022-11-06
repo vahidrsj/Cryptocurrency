@@ -32,11 +32,14 @@ namespace Cryptocurrency.ConsoleUI.Startup
             var exchangeRateSetting = new ExchangeRateAPISetting();
             Configuration.GetSection("ExchangeRateSetting").Bind(exchangeRateSetting);
 
+            services.Configure<CurrencySetting>(c => Configuration.GetSection("CurrencySetting").Bind(c));
+
             services.AddRefitClient<ICoinMarketAPI>()
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(coinMarketSetting.BaseURL));
 
             services.AddRefitClient<IExchangeRateAPI>()
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(exchangeRateSetting.BaseURL));
+
             services.AddMemoryCache();
             services.AddTransient<ICryptoListService, CryptoListService>();
             services.AddTransient<ICryptoPriceService, CryptoPriceService>();

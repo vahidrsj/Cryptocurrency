@@ -1,8 +1,8 @@
 ﻿using Cryptocurrency.Application.Dto.APIDto;
 using Cryptocurrency.Application.Interfaces;
 using Cryptocurrency.Application.Services;
+using Cryptocurrency.Core.Errors;
 using Cryptocurrency.Infrastructure.Services.API;
-using Refit;
 
 namespace Cryptocurrency.Infrastructure.Services
 {
@@ -23,7 +23,7 @@ namespace Cryptocurrency.Infrastructure.Services
                 if (symbolResult != null)
                     return new ServiceResult<CoinMarketAPIDto>(symbolResult);
                 else
-                    return new ServiceResult<CoinMarketAPIDto>("An error occurred on API calling");
+                    return new ServiceResult<CoinMarketAPIDto>(new ErrorResultDto() { ErrorType = Core.Enums.ErrorTypes.APICallError });
             }
             catch (Exception ex)
             {

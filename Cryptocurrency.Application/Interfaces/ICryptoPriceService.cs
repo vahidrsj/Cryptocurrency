@@ -5,6 +5,6 @@ namespace Cryptocurrency.Application.Interfaces
 {
     public interface ICryptoPriceService
     {
-        Task<ServiceResult<ExchangeRateAPIDto>> GetRates(string baseCurrency);
+        Task<ServiceResult<ExchangeRateAPIDto>> GetRates(string baseCurrency, List<string> currencies);
     }
 }

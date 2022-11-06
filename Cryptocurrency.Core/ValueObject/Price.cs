@@ -11,7 +11,7 @@
                 throw new ArgumentNullException(nameof(currency));
 
             if (Value <= 0)
-                throw new ArgumentNullException(nameof(Value));
+                throw new InvalidDataException(nameof(Value));
 
             this.Currency = currency;
             this.Value = Value;

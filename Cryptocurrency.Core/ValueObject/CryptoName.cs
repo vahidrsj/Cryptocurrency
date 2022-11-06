@@ -7,6 +7,12 @@
 
         public CryptoName(string name, string symbol)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
+            if (string.IsNullOrEmpty(symbol))
+                throw new ArgumentNullException(nameof(symbol));
+
             this.Name = name;
             this.Symbol = symbol;
         }
