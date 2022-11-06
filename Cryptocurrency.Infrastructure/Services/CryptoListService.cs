@@ -1,5 +1,8 @@
-﻿using Cryptocurrency.Application.Interfaces;
+﻿using Cryptocurrency.Application.Dto.APIDto;
+using Cryptocurrency.Application.Interfaces;
+using Cryptocurrency.Application.Services;
 using Cryptocurrency.Infrastructure.Services.API;
+using Refit;
 
 namespace Cryptocurrency.Infrastructure.Services
 {
@@ -11,25 +14,21 @@ namespace Cryptocurrency.Infrastructure.Services
             this.coinMarketAPI = coinMarketAPI;
         }
 
-        public async Task<object> GetMaps()
+        public async Task<ServiceResult<CoinMarketAPIDto>> GetSymbols()
         {
-            var mapResult = await coinMarketAPI.GetMaps();
+            try
+            {
+                var symbolResult = await coinMarketAPI.GetSymbols();
 
-            return mapResult;
-
-            //var request = new RestRequest("v1/cryptocurrency/map", Method.Get);
-            //request.Timeout = -1;
-            //request.AddHeader("X-CMC_PRO_API_KEY", apiKey);
-            //try
-            //{
-            //    var response = await restClient.ExecuteGetAsync(request);
-            //    return response;
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
+                if (symbolResult != null)
+                    return new ServiceResult<CoinMarketAPIDto>(symbolResult);
+                else
+                    return new ServiceResult<CoinMarketAPIDto>("An error occurred on API calling");
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult<CoinMarketAPIDto>(ex.Message);
+            }
         }
-
     }
 }

@@ -7,8 +7,11 @@
 
         public Price Create(string currency, decimal Value)
         {
-            //check parameters
-            //check valid currency
+            if (string.IsNullOrEmpty(currency))
+                throw new ArgumentNullException(nameof(currency));
+
+            if (Value <= 0)
+                throw new ArgumentNullException(nameof(Value));
 
             this.Currency = currency;
             this.Value = Value;

@@ -3,8 +3,8 @@ using Cryptocurrency.Application.Services;
 
 namespace Cryptocurrency.Application.Interfaces
 {
-    public interface ICryptoListService
+    public interface ICryptoPriceService
     {
-        Task<ServiceResult<CoinMarketAPIDto>> GetSymbols();
+        Task<ServiceResult<ExchangeRateAPIDto>> GetRates(string baseCurrency);
     }
 }

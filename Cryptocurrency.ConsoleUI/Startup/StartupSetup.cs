@@ -37,9 +37,9 @@ namespace Cryptocurrency.ConsoleUI.Startup
 
             services.AddRefitClient<IExchangeRateAPI>()
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(exchangeRateSetting.BaseURL));
-
+            services.AddMemoryCache();
             services.AddTransient<ICryptoListService, CryptoListService>();
-            services.AddTransient<ICryptoRateService, CryptoRateService>();
+            services.AddTransient<ICryptoPriceService, CryptoPriceService>();
 
             services.AddTransient<ICryptocurrencyHandler, CryptocurrencyHandler>();
             services.AddTransient<IAppLuncher, AppLuncher>();

@@ -1,4 +1,5 @@
-﻿using Cryptocurrency.Core.Errors;
+﻿using Cryptocurrency.Core.Enums;
+using Cryptocurrency.Core.Errors;
 
 namespace Cryptocurrency.Application.Services
 {
@@ -9,11 +10,20 @@ namespace Cryptocurrency.Application.Services
 
         public ErrorResultDto ErrorInfo { get; set; }
 
-        public ServiceResult(TResult result): this(result, true, null)
+        public ServiceResult(TResult result) : this(result, true, null)
         {
         }
 
-        public ServiceResult(ErrorResultDto error) : this(result: default(TResult), isSuccessfull:false, error)
+        public ServiceResult(ErrorResultDto error) : this(result: default(TResult), isSuccessfull: false, error)
+        {
+        }
+
+        public ServiceResult(string errorMessage) : this(result: default(TResult), isSuccessfull: false,
+            new ErrorResultDto()
+            {
+                ErrorType = ErrorTypes.APICallError,
+                Message = errorMessage
+            })
         {
         }
 

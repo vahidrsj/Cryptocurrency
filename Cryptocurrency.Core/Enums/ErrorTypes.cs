@@ -5,6 +5,7 @@
         None,
         InvalidParameter,
         APICallError,
+        APIReturnError,
         NotFound
     }
 }
