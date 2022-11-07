@@ -19,7 +19,8 @@ namespace Cryptocurrency.Application.Handlers
         private readonly ILogger<CryptocurrencyHandler> logger;
         private readonly IMemoryCache memoryCache;
 
-        public CryptocurrencyHandler(ICryptoListService coinMarketAPI, ICryptoPriceService exchangeRateAPI, ILogger<CryptocurrencyHandler> logger, IMemoryCache memoryCache)
+        public CryptocurrencyHandler(ICryptoListService coinMarketAPI, ICryptoPriceService exchangeRateAPI, 
+                                    ILogger<CryptocurrencyHandler> logger, IMemoryCache memoryCache)
         {
             this.coinMarketAPI = coinMarketAPI ?? throw new ArgumentNullException(nameof(coinMarketAPI));
             this.exchangeRateAPI = exchangeRateAPI ?? throw new ArgumentNullException(nameof(exchangeRateAPI));
@@ -73,17 +74,24 @@ namespace Cryptocurrency.Application.Handlers
 
             logger.LogInformation($"Getting {baseCrypto} prices using Exchangerate api.");
 
-            var response = await exchangeRateAPI.GetRates(baseCrypto.ToUpper(), currencies);
-            if (!response.IsSuccessfull)
+            var priceResponse = await exchangeRateAPI.GetRates(baseCrypto.ToUpper(), currencies);
+            if (priceResponse == null)
             {
-                logger.LogError(response.ErrorInfo.ToString());
-                return new ServiceResult<CryptoPriceDto>(response.ErrorInfo);
+                var error = new ErrorResultDto() { ErrorType = ErrorTypes.APICallError };
+                logger.LogError(error.ToString());
+                return new ServiceResult<CryptoPriceDto>(error);
             }
 
-            var resultStatus = response.Result.Success;
+            if (!priceResponse.IsSuccessfull)
+            {
+                logger.LogError(priceResponse.ErrorInfo.ToString());
+                return new ServiceResult<CryptoPriceDto>(priceResponse.ErrorInfo);
+            }
+
+            var resultStatus = priceResponse.Result.Success;
             if (resultStatus)
             {
-                crypto.SetPrice(response.Result.Rates);
+                crypto.SetPrice(priceResponse.Result.Rates);
 
                 var priceResult = crypto.ToCryptoPriceDto();
 
@@ -129,18 +137,25 @@ namespace Cryptocurrency.Application.Handlers
 
         private async Task<ServiceResult<CryptoListDto>> FetchCryptoSymbols()
         {
-            var response = await coinMarketAPI.GetSymbols();
-
-            if (!response.IsSuccessfull)
+            var symbolsResult = await coinMarketAPI.GetSymbols();
+            if (symbolsResult == null)
             {
-                logger.LogError(response.ErrorInfo.ToString());
-                return new ServiceResult<CryptoListDto>(response.ErrorInfo);
+                var error = new ErrorResultDto() { ErrorType = ErrorTypes.APICallError };
+                logger.LogError(error.ToString());
+
+                return new ServiceResult<CryptoListDto>(error);
             }
 
-            var resultStatus = response.Result.Status;
+            if (!symbolsResult.IsSuccessfull)
+            {
+                logger.LogError(symbolsResult.ErrorInfo.ToString());
+                return new ServiceResult<CryptoListDto>(symbolsResult.ErrorInfo);
+            }
+
+            var resultStatus = symbolsResult.Result.Status;
             if (resultStatus.error_code == 0)
             {
-                var symbolResult = response.Result.ToCryptoListDto();
+                var symbolResult = symbolsResult.Result.ToCryptoListDto();
 
                 logger.LogInformation("Crypto name list was successfully fetched. {@symbolResult}", symbolResult);
 

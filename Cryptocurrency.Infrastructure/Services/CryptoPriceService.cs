@@ -19,15 +19,11 @@ namespace Cryptocurrency.Infrastructure.Services
             try
             {
                 var rateResult = await exchangeRateAPI.GetRates(baseCurrency, string.Join(",", currencies));
-
-                if (rateResult != null)
-                    return new ServiceResult<ExchangeRateAPIDto>(rateResult);
-                else
-                    return new ServiceResult<ExchangeRateAPIDto>(new ErrorResultDto() { ErrorType = Core.Enums.ErrorTypes.APICallError });
+                return new ServiceResult<ExchangeRateAPIDto>(rateResult);
             }
             catch (Exception ex)
             {
-                return new ServiceResult<ExchangeRateAPIDto>(ex.Message);
+                return new ServiceResult<ExchangeRateAPIDto>(new ErrorResultDto() { ErrorType = Core.Enums.ErrorTypes.APICallError, Message = ex.Message });
             }
         }
     }

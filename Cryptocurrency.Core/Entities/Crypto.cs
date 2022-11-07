@@ -16,16 +16,20 @@ namespace Cryptocurrency.Core.Entities
 
         public void SetPrice(List<Price> prices)
         {
-            if (prices == null || prices.Count == 0)
+            if (prices == null)
                 throw new ArgumentNullException(nameof(prices));
+            else if (prices.Count == 0)
+                throw new InvalidDataException(nameof(prices));
 
             Prices = prices;
         }
 
         public void SetPrice(Dictionary<string, decimal> prices)
         {
-            if (prices == null || prices.Count == 0)
+            if (prices == null)
                 throw new ArgumentNullException(nameof(prices));
+            else if (prices.Count == 0)
+                throw new InvalidDataException(nameof(prices));
 
             foreach (var price in prices)
             {
@@ -35,19 +39,12 @@ namespace Cryptocurrency.Core.Entities
 
         public void AddPrice(Price price)
         {
-            if (string.IsNullOrEmpty(price.Currency) || price.Value <= 0)
+            if (string.IsNullOrEmpty(price.Currency))
                 throw new ArgumentNullException(nameof(price));
-
+            else if (price.Value <= 0)
+                throw new InvalidDataException(nameof(price));
+            
             Prices.Add(price);
         }
-
-        public void AddPriceRage(List<Price> price)
-        {
-            if (price == null || price.Count == 0)
-                throw new ArgumentNullException(nameof(price));
-
-            Prices.AddRange(price);
-        }
-
     }
 }

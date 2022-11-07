@@ -41,6 +41,7 @@ namespace Cryptocurrency.ConsoleUI.Startup
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(exchangeRateSetting.BaseURL));
 
             services.AddMemoryCache();
+
             services.AddTransient<ICryptoListService, CryptoListService>();
             services.AddTransient<ICryptoPriceService, CryptoPriceService>();
 

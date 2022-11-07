@@ -19,15 +19,11 @@ namespace Cryptocurrency.Infrastructure.Services
             try
             {
                 var symbolResult = await coinMarketAPI.GetSymbols();
-
-                if (symbolResult != null)
-                    return new ServiceResult<CoinMarketAPIDto>(symbolResult);
-                else
-                    return new ServiceResult<CoinMarketAPIDto>(new ErrorResultDto() { ErrorType = Core.Enums.ErrorTypes.APICallError });
+                return new ServiceResult<CoinMarketAPIDto>(symbolResult);
             }
             catch (Exception ex)
             {
-                return new ServiceResult<CoinMarketAPIDto>(ex.Message);
+                return new ServiceResult<CoinMarketAPIDto>(new ErrorResultDto() { ErrorType = Core.Enums.ErrorTypes.APICallError, Message = ex.Message });
             }
         }
     }

@@ -9,14 +9,12 @@ namespace Cryptocurrency.Application.Services
 {
     public class AppLuncher : IAppLuncher
     {
-        private readonly ILogger<AppLuncher> logger;
         private readonly ICryptocurrencyHandler cryptocurrencyHandler;
         private readonly CurrencySetting option;
 
-        public AppLuncher(ILogger<AppLuncher> logger, ICryptocurrencyHandler cryptocurrencyHandler, IOptions<CurrencySetting> option)
+        public AppLuncher(ICryptocurrencyHandler cryptocurrencyHandler, IOptions<CurrencySetting> option)
         {
             this.cryptocurrencyHandler = cryptocurrencyHandler ?? throw new ArgumentNullException(nameof(cryptocurrencyHandler));
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.option = option.Value ?? throw new ArgumentNullException(nameof(option));
         }
 
