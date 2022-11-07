@@ -32,7 +32,10 @@ namespace Cryptocurrency.Application.Handlers
         {
             logger.LogInformation("Getting symbols using Coinmarket api.");
 
+            //First checks the cache for stored symbol list
             var casheResult = memoryCache.Get<CryptoListDto>(CacheKeys.CryptoListKey);
+
+            //if cache was empty or the time is expired, starts to fetch data from API
             if (casheResult == null)
             {
                 var symbolResult = await FetchCryptoSymbols();
@@ -42,6 +45,7 @@ namespace Cryptocurrency.Application.Handlers
                     return new ServiceResult<CryptoListDto>(symbolResult.ErrorInfo);
                 }
 
+                //sets the cache for 10 minutes
                 memoryCache.Set(CacheKeys.CryptoListKey, symbolResult.Result, TimeSpan.FromMinutes(10));
                 logger.LogInformation("Crypto name list stored in cache. {@casheValues}", symbolResult.Result);
 
@@ -70,6 +74,7 @@ namespace Cryptocurrency.Application.Handlers
                 return new ServiceResult<CryptoPriceDto>(error);
             }
 
+            //validating the user requested crypto symbol
             var validateResult = await ValidateSymbol(baseCrypto);
             if (!validateResult.IsSuccessfull)
             {
@@ -77,10 +82,12 @@ namespace Cryptocurrency.Application.Handlers
                 return new ServiceResult<CryptoPriceDto>(validateResult.ErrorInfo);
             }
 
+            //start to create Crypto object that contains requested Crypto information
             var crypto = new Crypto(validateResult.Result);
 
             logger.LogInformation($"Getting {baseCrypto} prices using Exchangerate api.");
 
+            //after getting the crypto name, now starts to get the prices in specified currencies
             var priceResponse = await exchangeRateAPI.GetRates(baseCrypto.ToUpper(), currencies);
             if (priceResponse == null)
             {

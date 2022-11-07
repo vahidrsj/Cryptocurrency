@@ -41,14 +41,19 @@ namespace Cryptocurrency.Application.Tests.Handlers
         [Test]
         public async Task GetCryptoSymbols_Done_Successfully()
         {
-            var expectedResult = new ServiceResult<CoinMarketAPIDto>(new CoinMarketAPIDto()
+            var expectedResultMock = new ServiceResult<CoinMarketAPIDto>(new CoinMarketAPIDto()
             {
-                Data = new List<CoinMarketAPIDataDto>() { new CoinMarketAPIDataDto() { name = cryptoName, symbol = cryptoSymbol } },
+                Data = new List<CoinMarketAPIDataDto>() {
+                    new CoinMarketAPIDataDto() {
+                        name = cryptoName,
+                        symbol = cryptoSymbol
+                    }
+                },
                 Status = new CoinMarketAPIStatusDto()
             });
 
             cryptoListServiceMock.Setup(s => s.GetSymbols())
-                                 .Returns(Task.FromResult(expectedResult));
+                                 .ReturnsAsync(expectedResultMock);
 
             memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
                             .Returns(Mock.Of<ICacheEntry>);
@@ -65,10 +70,10 @@ namespace Cryptocurrency.Application.Tests.Handlers
         [Test]
         public async Task GetCryptoSymbols_Fetch_API_With_CallError()
         {
-            var expectedResult = new ServiceResult<CoinMarketAPIDto>(new ErrorResultDto() { ErrorType = ErrorTypes.APICallError });
+            var expectedResultMock = new ServiceResult<CoinMarketAPIDto>(new ErrorResultDto() { ErrorType = ErrorTypes.APICallError });
 
             cryptoListServiceMock.Setup(s => s.GetSymbols())
-                                 .Returns(Task.FromResult(expectedResult));
+                                 .ReturnsAsync(expectedResultMock);
 
             var result = await cryptoHandler.GetCryptoSymbols();
 
@@ -82,14 +87,14 @@ namespace Cryptocurrency.Application.Tests.Handlers
         [Test]
         public async Task GetCryptoSymbols_Fetch_API_Successful_With_Error()
         {
-            var expectedResult = new ServiceResult<CoinMarketAPIDto>(new CoinMarketAPIDto()
+            var expectedResultMock = new ServiceResult<CoinMarketAPIDto>(new CoinMarketAPIDto()
             {
                 Data = new List<CoinMarketAPIDataDto>() { new CoinMarketAPIDataDto() },
                 Status = new CoinMarketAPIStatusDto() { error_code = 1 }
             });
 
             cryptoListServiceMock.Setup(s => s.GetSymbols())
-                                 .Returns(Task.FromResult(expectedResult));
+                                 .ReturnsAsync(expectedResultMock);
 
             var result = await cryptoHandler.GetCryptoSymbols();
 
@@ -103,7 +108,7 @@ namespace Cryptocurrency.Application.Tests.Handlers
         [Test]
         public async Task GetCryptoPrices_Done_Successfully()
         {
-            var expectedResult = new ServiceResult<ExchangeRateAPIDto>(new ExchangeRateAPIDto()
+            var expectedResultMock = new ServiceResult<ExchangeRateAPIDto>(new ExchangeRateAPIDto()
             {
                 Base = cryptoSymbol,
                 Rates = new Dictionary<string, decimal>() { { "USD", 123.456M } },
@@ -117,14 +122,14 @@ namespace Cryptocurrency.Application.Tests.Handlers
             });
 
             cryptoListServiceMock.Setup(s => s.GetSymbols())
-                                 .Returns(Task.FromResult(expectedResultSymbols));
+                                 .ReturnsAsync(expectedResultSymbols);
 
             memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
                             .Returns(Mock.Of<ICacheEntry>);
 
             var currencyList = new List<string>() { "USD" };
             cryptoPriceServiceMock.Setup(s => s.GetRates(cryptoSymbol, currencyList))
-                                  .Returns(Task.FromResult(expectedResult));
+                                  .ReturnsAsync(expectedResultMock);
 
             var result = await cryptoHandler.GetCryptoPrices(cryptoSymbol, currencyList);
 
@@ -158,7 +163,7 @@ namespace Cryptocurrency.Application.Tests.Handlers
             });
 
             cryptoListServiceMock.Setup(s => s.GetSymbols())
-                     .Returns(Task.FromResult(expectedResultSymbols));
+                     .ReturnsAsync(expectedResultSymbols);
 
             memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
                             .Returns(Mock.Of<ICacheEntry>);
@@ -187,14 +192,14 @@ namespace Cryptocurrency.Application.Tests.Handlers
             var currencyList = new List<string>() { "USD" };
 
             cryptoListServiceMock.Setup(s => s.GetSymbols())
-                     .Returns(Task.FromResult(expectedResultSymbols));
+                     .ReturnsAsync(expectedResultSymbols);
 
             memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
                             .Returns(Mock.Of<ICacheEntry>);
 
 
             cryptoPriceServiceMock.Setup(s => s.GetRates(cryptoSymbol, currencyList))
-                                    .Returns(Task.FromResult(expectedResult));
+                                    .ReturnsAsync(expectedResult);
 
             var result = await cryptoHandler.GetCryptoPrices(cryptoSymbol, currencyList);
 
@@ -213,7 +218,7 @@ namespace Cryptocurrency.Application.Tests.Handlers
                 Status = new CoinMarketAPIStatusDto()
             });
 
-            var expectedResult = new ServiceResult<ExchangeRateAPIDto>(new ExchangeRateAPIDto()
+            var expectedResultMock = new ServiceResult<ExchangeRateAPIDto>(new ExchangeRateAPIDto()
             {
                 Base = string.Empty,
                 Rates = new Dictionary<string, decimal>(),
@@ -223,14 +228,14 @@ namespace Cryptocurrency.Application.Tests.Handlers
             var currencyList = new List<string>() { "USD" };
 
             cryptoListServiceMock.Setup(s => s.GetSymbols())
-                     .Returns(Task.FromResult(expectedResultSymbols));
+                     .ReturnsAsync(expectedResultSymbols);
 
             memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
                             .Returns(Mock.Of<ICacheEntry>);
 
 
             cryptoPriceServiceMock.Setup(s => s.GetRates(cryptoSymbol, currencyList))
-                                    .Returns(Task.FromResult(expectedResult));
+                                    .ReturnsAsync(expectedResultMock);
 
             var result = await cryptoHandler.GetCryptoPrices(cryptoSymbol, currencyList);
 

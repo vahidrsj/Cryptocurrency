@@ -1,4 +1,5 @@
 ﻿using Cryptocurrency.Application.APISettings;
+using Cryptocurrency.Application.Common;
 using Cryptocurrency.Application.Handlers;
 using Cryptocurrency.Application.Interfaces;
 using Cryptocurrency.Application.Services;
@@ -48,19 +49,17 @@ namespace Cryptocurrency.ConsoleUI.Startup
             services.AddTransient<ICryptocurrencyHandler, CryptocurrencyHandler>();
             services.AddTransient<IAppLuncher, AppLuncher>();
 
-            //var serilogLogger = new LoggerConfiguration()
-            //                .ReadFrom.Configuration(Configuration, "Serilog")
-            //                .CreateLogger();
-            //services.AddLogging(builder =>
-            //{
-            //    builder.AddSerilog(logger: serilogLogger, dispose: true);
-            //});
+            var appConfigSettings = new AppConfig();
+            Configuration.GetSection("AppConfig").Bind(appConfigSettings);
 
-            services.AddLogging(configure => configure.AddConsole())
-                .AddScoped<CryptocurrencyHandler>();
-
-            services.AddLogging(configure => configure.AddConsole())
-                .AddScoped<AppLuncher>();
+            if (appConfigSettings.Environment.ToLower() == "developement")
+                services.AddLogging(configure => configure.AddConsole())
+                     .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Debug)
+                    .AddScoped<CryptocurrencyHandler>();
+            else
+                services.AddLogging(configure => configure.AddConsole())
+                     .Configure<LoggerFilterOptions>(options => options.MinLevel = LogLevel.Error)
+                    .AddScoped<CryptocurrencyHandler>();
 
             return services.BuildServiceProvider();
         }
