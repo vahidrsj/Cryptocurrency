@@ -19,7 +19,7 @@ namespace Cryptocurrency.Application.Handlers
         private readonly ILogger<CryptocurrencyHandler> logger;
         private readonly IMemoryCache memoryCache;
 
-        public CryptocurrencyHandler(ICryptoListService coinMarketAPI, ICryptoPriceService exchangeRateAPI, 
+        public CryptocurrencyHandler(ICryptoListService coinMarketAPI, ICryptoPriceService exchangeRateAPI,
                                     ILogger<CryptocurrencyHandler> logger, IMemoryCache memoryCache)
         {
             this.coinMarketAPI = coinMarketAPI ?? throw new ArgumentNullException(nameof(coinMarketAPI));
@@ -57,6 +57,13 @@ namespace Cryptocurrency.Application.Handlers
         public async Task<ServiceResult<CryptoPriceDto>> GetCryptoPrices(string baseCrypto, List<string> currencies)
         {
             if (string.IsNullOrWhiteSpace(baseCrypto))
+            {
+                var error = new ErrorResultDto() { ErrorType = ErrorTypes.InvalidParameter };
+                logger.LogError(error.ToString());
+                return new ServiceResult<CryptoPriceDto>(error);
+            }
+
+            if (currencies == null || currencies.Count == 0)
             {
                 var error = new ErrorResultDto() { ErrorType = ErrorTypes.InvalidParameter };
                 logger.LogError(error.ToString());
