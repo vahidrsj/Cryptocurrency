@@ -40,7 +40,7 @@ namespace Cryptocurrency.Application.Services
 
             if (input.Key == ConsoleKey.Q)
                 return false;
-            else if (input.Key == ConsoleKey.D1)
+            else if (input.Key == ConsoleKey.D1 || input.Key == ConsoleKey.NumPad1)
             {
                 var symbols = await cryptocurrencyHandler.GetCryptoSymbols();
                 if (!symbols.IsSuccessfull)
@@ -50,14 +50,16 @@ namespace Cryptocurrency.Application.Services
 
                 return true;
             }
-            else if (input.Key == ConsoleKey.D2)
+            else if (input.Key == ConsoleKey.D2 || input.Key == ConsoleKey.NumPad2)
             {
                 Console.Clear();
                 Console.WriteLine("Enter a crypto symbol (e.g. BTC):");
                 var symbol = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(symbol))
+                {
                     Console.WriteLine("\r\n Invalid symbol. \r\n");
+                }    
                 else
                 {
                     var crypto = await cryptocurrencyHandler.GetCryptoPrices(symbol.ToUpper(), option.Currencies);
@@ -65,7 +67,6 @@ namespace Cryptocurrency.Application.Services
                         Console.WriteLine(crypto.ErrorInfo.ToString() + "\r\n");
                     else
                     { 
-                        Console.Clear();
                         Console.WriteLine($"Cryptocurrency name: {crypto.Result.Name}\r\nSymbol: {crypto.Result.Symbol}\r\n" +
                             $"Prices:\r\n{string.Join("\r\n", crypto.Result.Prices.Select(d => d.Key + " = " + d.Value).ToArray())} \r\n");
                     }
@@ -81,7 +82,6 @@ namespace Cryptocurrency.Application.Services
 
         private void displayCryptoList(CryptoListDto cryptoList)
         {
-            Console.Clear();
             Console.WriteLine("Top 30 Cryptocurrencies by rank: \r\n");
             foreach (var item in cryptoList.Data)
             {
