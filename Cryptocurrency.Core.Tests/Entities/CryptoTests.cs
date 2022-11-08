@@ -18,11 +18,10 @@ namespace Cryptocurrency.Core.Tests.Entities
         {
             var crypto = new Crypto(new CryptoName(cryptoName, cryptoSymbol));
 
-            Assert.IsTrue(crypto != null);
-            Assert.False(crypto == null);
-            Assert.That(crypto?.CryptoName.Name, Is.EqualTo(cryptoName));
-            Assert.That(crypto?.CryptoName.Symbol, Is.EqualTo(cryptoSymbol));
-            Assert.That(crypto?.Prices, Is.Empty);
+            Assert.IsNotNull(crypto);
+            Assert.That(crypto.CryptoName.Name, Is.EqualTo(cryptoName));
+            Assert.That(crypto.CryptoName.Symbol, Is.EqualTo(cryptoSymbol));
+            Assert.That(crypto.Prices, Is.Empty);
         }
 
         [Test]
@@ -35,9 +34,9 @@ namespace Cryptocurrency.Core.Tests.Entities
             var crypto = new Crypto(new CryptoName(cryptoName, cryptoSymbol));
             crypto.SetPrice(prices);
 
-            Assert.IsTrue(crypto != null);
-            Assert.That(crypto?.CryptoName.Name, Is.EqualTo(cryptoName));
-            Assert.That(crypto?.CryptoName.Symbol, Is.EqualTo(cryptoSymbol));
+            Assert.IsNotNull(crypto);
+            Assert.That(crypto.CryptoName.Name, Is.EqualTo(cryptoName));
+            Assert.That(crypto.CryptoName.Symbol, Is.EqualTo(cryptoSymbol));
             Assert.IsNotEmpty(crypto.Prices);
         }
 
