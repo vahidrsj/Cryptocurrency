@@ -36,14 +36,14 @@ So, the specified user story only works for BTC (Bitcoin) cryptocurrency because
 
 Target OS: Linux
 
-Build : 
+Build: 
 ```
-docker build -t cryptocurrencyconsoleui:latest . 
+docker build -f Cryptocurrency.ConsoleUI\Dockerfile -t cryptocurrency .
 ```
 
-Run :
+Run:
 ```
-docker run -it cryptocurrencyconsoleui:latest
+docker run -it cryptocurrency:latest
 
 ```
 
