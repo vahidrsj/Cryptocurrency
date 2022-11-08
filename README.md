@@ -10,7 +10,7 @@
   - [Docker](#docker)
 ## Prerequisites
 
-For compiling and building you need the following:
+For compiling and building you need:
 
 - [Visual Studio 2022 (Latest version)](https://visualstudio.microsoft.com/) installed on your development machine.
 
