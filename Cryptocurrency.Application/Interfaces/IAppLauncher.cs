@@ -1,7 +1,7 @@
 ﻿namespace Cryptocurrency.Application.Interfaces
 {
-    public interface IAppLuncher
+    public interface IAppLauncher
     {
-        Task LunchApp();
+        Task LauncheApp();
     }
 }

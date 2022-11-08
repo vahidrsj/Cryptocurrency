@@ -7,12 +7,12 @@ using Microsoft.Extensions.Options;
 
 namespace Cryptocurrency.Application.Services
 {
-    public class AppLuncher : IAppLuncher
+    public class AppLauncher : IAppLauncher
     {
         private readonly ICryptocurrencyHandler cryptocurrencyHandler;
         private readonly CurrencySetting option;
 
-        public AppLuncher(ICryptocurrencyHandler cryptocurrencyHandler, IOptions<CurrencySetting> option)
+        public AppLauncher(ICryptocurrencyHandler cryptocurrencyHandler, IOptions<CurrencySetting> option)
         {
             this.cryptocurrencyHandler = cryptocurrencyHandler ?? throw new ArgumentNullException(nameof(cryptocurrencyHandler));
             this.option = option.Value ?? throw new ArgumentNullException(nameof(option));
@@ -22,7 +22,7 @@ namespace Cryptocurrency.Application.Services
         /// Application starts with this methode.
         /// </summary>
         /// <returns></returns>
-        public async Task LunchApp()
+        public async Task LauncheApp()
         {
             Console.Clear();
             bool showMenu = true;

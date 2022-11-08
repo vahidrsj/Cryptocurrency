@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 var startup = new StartupSetup();
 var sp = startup.ConfigureServices();
 
-//Lunching the app async
-var applicationService = sp.GetService<IAppLuncher>();
+//Launching the app async
+var applicationService = sp.GetService<IAppLauncher>();
 if (applicationService != null)
-    await applicationService.LunchApp();
+    await applicationService.LauncheApp();

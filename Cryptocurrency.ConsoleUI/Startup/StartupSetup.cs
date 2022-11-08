@@ -47,7 +47,7 @@ namespace Cryptocurrency.ConsoleUI.Startup
             services.AddTransient<ICryptoPriceService, CryptoPriceService>();
 
             services.AddTransient<ICryptocurrencyHandler, CryptocurrencyHandler>();
-            services.AddTransient<IAppLuncher, AppLuncher>();
+            services.AddTransient<IAppLauncher, AppLauncher>();
 
             var appConfigSettings = new AppConfig();
             Configuration.GetSection("AppConfig").Bind(appConfigSettings);
